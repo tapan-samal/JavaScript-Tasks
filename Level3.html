@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview QUestions</title>
+</head>
+<body>
+    <h1 style="text-align: center">JavaScript Interview Questions</h1>
+    
+
+
+    <h3>
+        20: Closure: Create a counter function that increments and returns the
+        count on each call.
+      </h3>
+      <script>
+        let createCount = () => {
+          let count = 0;
+          return function () {
+            return ++count;
+          };
+        };
+        let counter = createCount();
+        console.log(counter());
+        console.log(counter());
+      </script>
+      <h3>21: Closure: Implement a private variable using closure.</h3>
+      <script>
+        let createCounter = () => {
+          let count = 0; //Private variable
+  
+          //Inner Function(closure)
+          function increment() {
+            count++;
+            console.log("count:", count);
+          }
+          return {
+            incrementCounter: function () {
+              increment();
+            },
+            getCount: function () {
+              return count;
+            },
+          };
+        };
+        let storeCounter = createCounter();
+        storeCounter.incrementCounter();
+        storeCounter.incrementCounter();
+        console.log(storeCounter.getCount());
+      </script>
+  
+      <h3>
+        22: Callback: Implement a function that makes multiple API calls processes
+        the data.
+      </h3>
+      <script>
+        let apiCall = (url, cb) => {
+          fetch(url)
+            .then((response) => response.json())
+            .then((data) => cb(data))
+            .catch((error) =>
+              console.error("Error during API call", error.message)
+            );
+        };
+  
+        const handleData = (data) => {
+          console.log("Processed Data:", data);
+        };
+  
+        let main = () => {
+          const apiUrl1 = "https://jsonplaceholder.typicode.com/todos/1";
+          const apiUrl2 = "https://jsonplaceholder.typicode.com/todos/2";
+          apiCall(apiUrl1, handleData);
+          apiCall(apiUrl2, handleData);
+        };
+        main();
+      </script>
+  
+      <h3>23: Promises: Multiple API calls and Processed the data.</h3>
+      <script>
+        const makeApiCall = (url) => {
+          return fetch(url)
+            .then((response) => response.json())
+            .catch((error) => {
+              console.error("Error during API call", error.message);
+            });
+        };
+        const mainFunction = () => {
+          const apiUrl_1 = "https://jsonplaceholder.typicode.com/todos/1";
+          const apiUrl_2 = "https://jsonplaceholder.typicode.com/todos/2";
+  
+          //Make the API calls and store promises in an array
+          const apiCallPromises = [makeApiCall(apiUrl_1), makeApiCall(apiUrl_2)];
+  
+          //Use Promise.all to wait complete all API call to complete
+          Promise.all(apiCallPromises)
+            .then((dataArray) => {
+              console.log("Process Data 1: ", dataArray[0]);
+              console.log("Process Data 2: ", dataArray[1]);
+            })
+            .catch((error) => {
+              console.error("Error during API calls");
+            });
+        };
+        mainFunction();
+      </script>
+  
+      <h3>24: Async/await: Multiple API calls and Processed the data..</h3>
+      <script>
+        const makeAPICalls = async (url) => {
+          try {
+            let response = await fetch(url);
+            return await response.json();
+          } catch (error) {
+            console.error("Error during API calls", error.message);
+          }
+        };
+        const mainFunctions = async () => {
+          const apiUrl1 = "https://jsonplaceholder.typicode.com/todos/1";
+          const apiUrl2 = "https://jsonplaceholder.typicode.com/todos/2";
+  
+          try {
+            const data1 = await makeAPICalls(apiUrl1);
+            const data2 = await makeAPICalls(apiUrl2);
+  
+            console.log("Processed Data 1: ", data1);
+            console.log("Processed Data 2: ", data2);
+          } catch (error) {
+            console.error("Error during API calls");
+          }
+        };
+        mainFunctions();
+      </script>
+      <h3>
+        25: Promise: Load multiple images asynchronously and display on web.
+      </h3>
+      <div
+        id="imgContainer"
+        style="display: flex; height: 100px; width: 100px; gap: 12px"
+      ></div>
+      <script>
+        const loadImage = (src) =>
+          new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = reject;
+            img.src = src;
+          });
+  
+        const imgContainer = document.getElementById("imgContainer");
+        const imgUrls = [
+          "../image/tapan1.jpeg",
+          "../image/tapan2.jpeg",
+          "../image/tapan3.jpeg",
+        ];
+  
+        Promise.all(imgUrls.map(loadImage))
+          .then((images) => {
+            images.forEach((image) => imgContainer.appendChild(image));
+          })
+          .catch((error) => console.error(error));
+      </script>
+  
+      <h3>
+        26: Async/await: Load multiple images asynchronously and display on web.
+      </h3>
+      <div
+        id="imgContainers"
+        style="display: flex; height: 100px; width: 100px; gap: 12px"
+      ></div>
+      <script>
+        const loadImages = async (src) => {
+          return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.error = reject;
+            img.src = src;
+          });
+        };
+  
+        const loadImageAsync = async () => {
+          try {
+            const imgUrls = [
+              "../image/tapan3.jpeg",
+              "../image/tapan4.jpeg",
+              "../image/tapan5.jpeg",
+            ];
+            const images = await Promise.all(imgUrls.map(loadImages));
+  
+            const imgContainer = document.querySelector("#imgContainers");
+            images.forEach((image) => imgContainer.appendChild(image));
+          } catch (error) {
+            console.error(error);
+          }
+        };
+        loadImageAsync();
+      </script>
+      <h3>
+        29: Async/await: Implement an async functuion to fetch data from an API
+        and handle errors using try/catch black.
+      </h3>
+      <script>
+        const fetchApiData = async (url) => {
+          try {
+            let response = await fetch(url);
+            if (!response.ok) {
+              throw new Error("Request Failed " + response.status);
+            }
+            const data = await response.json();
+            console.log("fetch Data :", data[0].title);
+            return data;
+          } catch (error) {
+            console.error("Error while fetching data", error);
+          }
+        };
+        fetchApiData("https://jsonplaceholder.typicode.com/posts");
+      </script>
+      <h3>30: .</h3>
+      <h3>
+        31: Prototype: Create a prototype method to calculate the total value
+        ofproduct..
+      </h3>
+  
+    
+</body>
+</html>
